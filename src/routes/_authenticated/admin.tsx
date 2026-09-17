@@ -54,7 +54,13 @@ function AdminPanel() {
   });
 
   const priceMutation = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: { price?: number; is_active?: boolean };
+    }) => {
       const { error } = await supabase.from("service_prices").update(patch).eq("id", id);
       if (error) throw error;
     },
