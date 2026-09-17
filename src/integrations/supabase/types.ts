@@ -14,16 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      favorites: {
+        Row: {
+          created_at: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          category: Database["public"]["Enums"]["listing_category"]
+          contact_phone: string | null
+          created_at: string
+          currency: string
+          description: string
+          id: string
+          images: string[]
+          listing_kind: Database["public"]["Enums"]["listing_kind"]
+          location: string
+          price: number
+          seller_id: string | null
+          seller_name: string | null
+          status: Database["public"]["Enums"]["listing_status"]
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["listing_category"]
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          images?: string[]
+          listing_kind?: Database["public"]["Enums"]["listing_kind"]
+          location?: string
+          price?: number
+          seller_id?: string | null
+          seller_name?: string | null
+          status?: Database["public"]["Enums"]["listing_status"]
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["listing_category"]
+          contact_phone?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          images?: string[]
+          listing_kind?: Database["public"]["Enums"]["listing_kind"]
+          location?: string
+          price?: number
+          seller_id?: string | null
+          seller_name?: string | null
+          status?: Database["public"]["Enums"]["listing_status"]
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_read: boolean
+          listing_id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          listing_id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          listing_id?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_listing_views: {
+        Args: { _listing_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      listing_category:
+        | "real_estate"
+        | "vehicles"
+        | "electronics"
+        | "furniture"
+        | "other"
+      listing_kind: "sale" | "rent"
+      listing_status: "active" | "archived" | "sold"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +310,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      listing_category: [
+        "real_estate",
+        "vehicles",
+        "electronics",
+        "furniture",
+        "other",
+      ],
+      listing_kind: ["sale", "rent"],
+      listing_status: ["active", "archived", "sold"],
+    },
   },
 } as const
