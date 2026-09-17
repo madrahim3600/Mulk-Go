@@ -25,13 +25,13 @@ export type Listing = {
 };
 
 export type ListingFilters = {
-  q?: string;
-  category?: Category | "all";
-  kind?: Kind | "all";
-  priceMin?: number;
-  priceMax?: number;
-  sort?: "new" | "cheap" | "expensive";
-  limit?: number;
+  q?: string | undefined;
+  category?: Category | "all" | undefined;
+  kind?: Kind | "all" | undefined;
+  priceMin?: number | undefined;
+  priceMax?: number | undefined;
+  sort?: "new" | "cheap" | "expensive" | undefined;
+  limit?: number | undefined;
 };
 
 export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {

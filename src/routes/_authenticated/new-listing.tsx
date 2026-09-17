@@ -62,7 +62,7 @@ function NewListing() {
         .from("listings")
         .insert({
           seller_id: user.id,
-          seller_name: profile?.full_name || user.email,
+          seller_name: profile?.full_name || user.email || null,
           title: form.title,
           description: form.description,
           category: form.category,

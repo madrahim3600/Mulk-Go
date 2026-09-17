@@ -20,12 +20,12 @@ import { useI18n } from "@/lib/i18n";
 import { CATEGORIES, fetchListings, type Category, type Kind } from "@/lib/listings";
 
 type SearchParams = {
-  q?: string;
-  category?: Category | "all";
-  kind?: Kind | "all";
-  min?: number;
-  max?: number;
-  sort?: "new" | "cheap" | "expensive";
+  q?: string | undefined;
+  category?: Category | "all" | undefined;
+  kind?: Kind | "all" | undefined;
+  min?: number | undefined;
+  max?: number | undefined;
+  sort?: "new" | "cheap" | "expensive" | undefined;
 };
 
 export const Route = createFileRoute("/listings/")({
@@ -54,7 +54,7 @@ export const Route = createFileRoute("/listings/")({
 function ListingsPage() {
   const { t } = useI18n();
   const search = Route.useSearch();
-  const navigate = useNavigate({ from: "/listings" });
+  const navigate = useNavigate({ from: "/listings/" });
   const [qInput, setQInput] = useState(search.q ?? "");
 
   const { data, isLoading } = useQuery({
@@ -71,7 +71,7 @@ function ListingsPage() {
   });
 
   const update = (patch: Partial<SearchParams>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }) });
+    navigate({ search: (prev: SearchParams) => ({ ...prev, ...patch }) });
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -180,7 +180,7 @@ function ListingsPage() {
               className="w-full"
               onClick={() => {
                 setQInput("");
-                navigate({ search: {} });
+                navigate({ search: {} as SearchParams });
               }}
             >
               {t("reset")}
