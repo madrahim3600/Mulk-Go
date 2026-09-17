@@ -17,6 +17,7 @@ import {
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const { user } = useAuth();
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
