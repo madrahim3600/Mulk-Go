@@ -43,6 +43,12 @@ export function Header() {
           >
             {t("listings")}
           </Link>
+          <Link
+            to="/notary"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+          >
+            {t("notary")}
+          </Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
