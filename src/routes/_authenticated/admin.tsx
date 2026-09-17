@@ -73,7 +73,17 @@ function AdminPanel() {
   });
 
   const requestMutation = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: {
+        status?: NotaryStatus;
+        identity_status?: "pending" | "verified" | "failed";
+        identity_verified_at?: string;
+      };
+    }) => {
       const { error } = await supabase.from("notary_requests").update(patch).eq("id", id);
       if (error) throw error;
     },
