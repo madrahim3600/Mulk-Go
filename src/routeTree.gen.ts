@@ -20,6 +20,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as ListingsIndexRouteImport } from './routes/listings.index'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as AuthenticatedNotaryIndexRouteImport } from './routes/_authenticated/notary.index'
+import { Route as AuthenticatedNotaryNewRouteImport } from './routes/_authenticated/notary.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,11 @@ const AuthenticatedNotaryIndexRoute =
     path: '/notary/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedNotaryNewRoute = AuthenticatedNotaryNewRouteImport.update({
+  id: '/notary/new',
+  path: '/notary/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/listings/': typeof ListingsIndexRoute
+  '/notary/new': typeof AuthenticatedNotaryNewRoute
   '/notary/': typeof AuthenticatedNotaryIndexRoute
 }
 export interface FileRoutesByTo {
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/listings': typeof ListingsIndexRoute
+  '/notary/new': typeof AuthenticatedNotaryNewRoute
   '/notary': typeof AuthenticatedNotaryIndexRoute
 }
 export interface FileRoutesById {
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/listings/': typeof ListingsIndexRoute
+  '/_authenticated/notary/new': typeof AuthenticatedNotaryNewRoute
   '/_authenticated/notary/': typeof AuthenticatedNotaryIndexRoute
 }
 export interface FileRouteTypes {
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/listings/$id'
     | '/listings/'
+    | '/notary/new'
     | '/notary/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/listings/$id'
     | '/listings'
+    | '/notary/new'
     | '/notary'
   id:
     | '__root__'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/listings/$id'
     | '/listings/'
+    | '/_authenticated/notary/new'
     | '/_authenticated/notary/'
   fileRoutesById: FileRoutesById
 }
@@ -242,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNotaryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notary/new': {
+      id: '/_authenticated/notary/new'
+      path: '/notary/new'
+      fullPath: '/notary/new'
+      preLoaderRoute: typeof AuthenticatedNotaryNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -251,6 +270,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMyListingsRoute: typeof AuthenticatedMyListingsRoute
   AuthenticatedNewListingRoute: typeof AuthenticatedNewListingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedNotaryNewRoute: typeof AuthenticatedNotaryNewRoute
   AuthenticatedNotaryIndexRoute: typeof AuthenticatedNotaryIndexRoute
 }
 
@@ -260,6 +280,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMyListingsRoute: AuthenticatedMyListingsRoute,
   AuthenticatedNewListingRoute: AuthenticatedNewListingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedNotaryNewRoute: AuthenticatedNotaryNewRoute,
   AuthenticatedNotaryIndexRoute: AuthenticatedNotaryIndexRoute,
 }
 
