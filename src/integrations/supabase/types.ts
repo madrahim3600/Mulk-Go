@@ -135,6 +135,117 @@ export type Database = {
           },
         ]
       }
+      notary_requests: {
+        Row: {
+          admin_comment: string
+          buyer_full_name: string
+          buyer_passport: string
+          buyer_phone: string
+          buyer_pinfl: string
+          cadastre_number: string | null
+          created_at: string
+          currency: string
+          id: string
+          identity_method: string
+          identity_payload: Json | null
+          identity_status: Database["public"]["Enums"]["identity_status"]
+          identity_verified_at: string | null
+          listing_id: string | null
+          notes: string
+          price_snapshot: number
+          property_address: string
+          property_area: number | null
+          property_title: string
+          property_type: string
+          property_value: number
+          seller_full_name: string
+          seller_passport: string
+          seller_phone: string
+          seller_pinfl: string
+          service_code: string
+          status: Database["public"]["Enums"]["notary_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_comment?: string
+          buyer_full_name?: string
+          buyer_passport?: string
+          buyer_phone?: string
+          buyer_pinfl?: string
+          cadastre_number?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          identity_method?: string
+          identity_payload?: Json | null
+          identity_status?: Database["public"]["Enums"]["identity_status"]
+          identity_verified_at?: string | null
+          listing_id?: string | null
+          notes?: string
+          price_snapshot?: number
+          property_address?: string
+          property_area?: number | null
+          property_title?: string
+          property_type?: string
+          property_value?: number
+          seller_full_name?: string
+          seller_passport?: string
+          seller_phone?: string
+          seller_pinfl?: string
+          service_code: string
+          status?: Database["public"]["Enums"]["notary_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_comment?: string
+          buyer_full_name?: string
+          buyer_passport?: string
+          buyer_phone?: string
+          buyer_pinfl?: string
+          cadastre_number?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          identity_method?: string
+          identity_payload?: Json | null
+          identity_status?: Database["public"]["Enums"]["identity_status"]
+          identity_verified_at?: string | null
+          listing_id?: string | null
+          notes?: string
+          price_snapshot?: number
+          property_address?: string
+          property_area?: number | null
+          property_title?: string
+          property_type?: string
+          property_value?: number
+          seller_full_name?: string
+          seller_passport?: string
+          seller_phone?: string
+          seller_pinfl?: string
+          service_code?: string
+          status?: Database["public"]["Enums"]["notary_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notary_requests_service_code_fkey"
+            columns: ["service_code"]
+            isOneToOne: false
+            referencedRelation: "service_prices"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -165,17 +276,92 @@ export type Database = {
         }
         Relationships: []
       }
+      service_prices: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description_ru: string
+          description_uz: string
+          id: string
+          is_active: boolean
+          name_ru: string
+          name_uz: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description_ru?: string
+          description_uz?: string
+          id?: string
+          is_active?: boolean
+          name_ru: string
+          name_uz: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description_ru?: string
+          description_uz?: string
+          id?: string
+          is_active?: boolean
+          name_ru?: string
+          name_uz?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       increment_listing_views: {
         Args: { _listing_id: string }
         Returns: undefined
       }
     }
     Enums: {
+      app_role: "admin" | "notary" | "user"
+      identity_status: "pending" | "verified" | "failed"
       listing_category:
         | "real_estate"
         | "vehicles"
@@ -184,6 +370,13 @@ export type Database = {
         | "other"
       listing_kind: "sale" | "rent"
       listing_status: "active" | "archived" | "sold"
+      notary_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "approved"
+        | "rejected"
+        | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -311,6 +504,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "notary", "user"],
+      identity_status: ["pending", "verified", "failed"],
       listing_category: [
         "real_estate",
         "vehicles",
@@ -320,6 +515,14 @@ export const Constants = {
       ],
       listing_kind: ["sale", "rent"],
       listing_status: ["active", "archived", "sold"],
+      notary_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "approved",
+        "rejected",
+        "completed",
+      ],
     },
   },
 } as const

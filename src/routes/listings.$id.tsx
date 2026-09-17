@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Eye, Heart, MapPin, Phone, Send } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MapPin, Phone, Send, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -179,6 +179,33 @@ function ListingDetail() {
               <p className="mt-1 font-semibold">{listing.seller_name || "—"}</p>
             </div>
 
+            {!isOwner && listing.seller_id && (
+              <div className="space-y-2 rounded-xl border border-border p-4">
+                <p className="text-sm font-semibold">{t("writeToSeller")}</p>
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t("messagePlaceholder")}
+                  rows={3}
+                />
+                <Button
+                  className="w-full"
+                  disabled={!message.trim() || messageMutation.isPending}
+                  onClick={() => {
+                    if (!user) {
+                      toast.info(t("loginRequired"));
+                      navigate({ to: "/auth" });
+                      return;
+                    }
+                    messageMutation.mutate();
+                  }}
+                >
+                  <Send className="size-4" />
+                  {t("sendMessage")}
+                </Button>
+              </div>
+            )}
+
             {listing.contact_phone && (
               <Button asChild variant="outline" className="w-full">
                 <a href={`tel:${listing.contact_phone.replace(/\s/g, "")}`}>
@@ -204,32 +231,21 @@ function ListingDetail() {
               {isFav ? t("inFavorites") : t("addFavorite")}
             </Button>
 
-            {!isOwner && listing.seller_id && (
-              <div className="space-y-2 border-t border-border pt-4">
-                <p className="text-sm font-semibold">{t("writeToSeller")}</p>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={t("messagePlaceholder")}
-                  rows={3}
-                />
-                <Button
-                  className="w-full"
-                  disabled={!message.trim() || messageMutation.isPending}
-                  onClick={() => {
-                    if (!user) {
-                      toast.info(t("loginRequired"));
-                      navigate({ to: "/auth" });
-                      return;
-                    }
-                    messageMutation.mutate();
-                  }}
-                >
-                  <Send className="size-4" />
-                  {t("sendMessage")}
-                </Button>
-              </div>
-            )}
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (!user) {
+                  toast.info(t("loginRequired"));
+                  navigate({ to: "/auth" });
+                  return;
+                }
+                navigate({ to: "/notary/new", search: { listing: id } });
+              }}
+            >
+              <ShieldCheck className="size-4" />
+              {t("formalize")}
+            </Button>
+
           </aside>
         </div>
       </main>

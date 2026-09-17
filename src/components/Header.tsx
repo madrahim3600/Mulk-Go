@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Heart, LogOut, MessageSquare, Plus, User2, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
 export function Header() {
   const { t, lang, setLang } = useI18n();
   const { user } = useAuth();
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -42,6 +44,12 @@ export function Header() {
             className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
           >
             {t("listings")}
+          </Link>
+          <Link
+            to="/notary"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+          >
+            {t("notary")}
           </Link>
         </nav>
 
@@ -93,8 +101,16 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link to="/notary">{t("notary")}</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link to="/profile">{t("profile")}</Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">{t("adminPanel")}</Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="size-4" />
