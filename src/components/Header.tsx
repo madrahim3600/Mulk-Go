@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Heart, LogOut, MessageSquare, Plus, User2, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import {
