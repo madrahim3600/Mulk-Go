@@ -20,6 +20,7 @@ import {
   serviceName,
 } from "@/lib/notary";
 import type { dict } from "@/lib/i18n";
+import { findFieldLabel, kindLabel } from "@/lib/property-fields";
 
 export const Route = createFileRoute("/_authenticated/notary/")({
   component: NotaryHub,
@@ -132,8 +133,21 @@ function NotaryHub() {
                           {service ? serviceName(service, lang) : r.service_code}
                         </p>
                         <p className="mt-1 text-sm text-muted-foreground">
+                          {kindLabel(r.property_type, lang as Lang)} ·{" "}
                           {r.property_title || r.property_address || "—"}
                         </p>
+                        {r.property_details && Object.keys(r.property_details).length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {Object.entries(r.property_details).map(([k, v]) => (
+                              <span
+                                key={k}
+                                className="rounded-lg bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+                              >
+                                {findFieldLabel(r.property_type, k, lang as Lang)}: {String(v)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <p className="font-display font-bold">
