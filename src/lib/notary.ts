@@ -31,6 +31,7 @@ export type NotaryRequest = {
   price_snapshot: number;
   currency: string;
   property_type: string;
+  property_details: Record<string, string> | null;
   property_title: string;
   property_address: string;
   property_area: number | null;

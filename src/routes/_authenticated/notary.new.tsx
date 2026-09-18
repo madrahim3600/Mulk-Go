@@ -20,6 +20,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatPrice, useI18n, type Lang } from "@/lib/i18n";
 import { fetchFavorites, fetchListing } from "@/lib/listings";
 import { fetchServicePrices, serviceName } from "@/lib/notary";
+import {
+  AREA_KINDS,
+  PROPERTY_FIELDS,
+  PROPERTY_KINDS,
+  categoryToKind,
+  fieldLabel,
+  type PropertyKind,
+} from "@/lib/property-fields";
 
 type Search = { listing?: string | undefined };
 
@@ -55,8 +63,9 @@ function NewNotaryRequest() {
   const [listingId, setListingId] = useState(search.listing ?? "");
   const [serviceCode, setServiceCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [kind, setKind] = useState<PropertyKind>("real_estate");
+  const [details, setDetails] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
-    property_type: "",
     property_title: "",
     property_address: "",
     property_area: "",
@@ -95,9 +104,9 @@ function NewNotaryRequest() {
       return;
     }
     setListingId(listing.id);
+    setKind(categoryToKind(listing.category));
     setForm((f) => ({
       ...f,
-      property_type: listing.category,
       property_title: listing.title,
       property_address: listing.location,
       property_value: String(listing.price ?? ""),
@@ -127,11 +136,14 @@ function NewNotaryRequest() {
           service_code: selected.code,
           price_snapshot: Number(selected.price),
           currency: selected.currency,
-          property_type: form.property_type,
+          property_type: kind,
+          property_details: Object.fromEntries(
+            Object.entries(details).filter(([, v]) => String(v).trim() !== ""),
+          ),
           property_title: form.property_title,
           property_address: form.property_address,
-          property_area: form.property_area ? Number(form.property_area) : null,
-          cadastre_number: form.cadastre_number || null,
+          property_area: showArea && form.property_area ? Number(form.property_area) : null,
+          cadastre_number: (showArea && form.cadastre_number) || null,
           property_value: Number(form.property_value || 0),
           seller_full_name: form.seller_full_name,
           seller_passport: form.seller_passport,
