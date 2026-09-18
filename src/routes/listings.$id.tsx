@@ -38,7 +38,6 @@ function ListingDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [message, setMessage] = useState("");
   const [activeImage, setActiveImage] = useState(0);
 
   const { data: listing, isLoading } = useQuery({
