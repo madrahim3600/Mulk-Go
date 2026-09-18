@@ -122,6 +122,8 @@ function NewNotaryRequest() {
   }, [search.listing]);
 
   const selected = services?.find((s) => s.code === serviceCode);
+  const kindFields = PROPERTY_FIELDS[kind];
+  const showArea = AREA_KINDS.includes(kind);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -267,13 +269,25 @@ function NewNotaryRequest() {
             <h2 className="font-semibold">{t("propertyTitle")}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="ptype">{t("propertyType")}</Label>
-                <Input
-                  id="ptype"
-                  value={form.property_type}
-                  onChange={(e) => setForm({ ...form, property_type: e.target.value })}
-                  required
-                />
+                <Label>{t("propertyType")}</Label>
+                <Select
+                  value={kind}
+                  onValueChange={(v) => {
+                    setKind(v as PropertyKind);
+                    setDetails({});
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROPERTY_KINDS.map((k) => (
+                      <SelectItem key={k.value} value={k.value}>
+                        {k.label[lang as Lang]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ptitle">{t("propertyTitle")}</Label>
@@ -294,24 +308,45 @@ function NewNotaryRequest() {
                 required
               />
             </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {kindFields.map((f) => (
+                <div key={f.key} className="space-y-2">
+                  <Label htmlFor={`d-${f.key}`}>{fieldLabel(f, lang as Lang)}</Label>
+                  <Input
+                    id={`d-${f.key}`}
+                    type={f.type === "number" ? "number" : "text"}
+                    value={details[f.key] ?? ""}
+                    placeholder={f.placeholder ?? ""}
+                    required={Boolean(f.required)}
+                    onChange={(e) => setDetails({ ...details, [f.key]: e.target.value })}
+                  />
+                </div>
+              ))}
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="parea">{t("propertyArea")}</Label>
-                <Input
-                  id="parea"
-                  type="number"
-                  value={form.property_area}
-                  onChange={(e) => setForm({ ...form, property_area: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cad">{t("cadastre")}</Label>
-                <Input
-                  id="cad"
-                  value={form.cadastre_number}
-                  onChange={(e) => setForm({ ...form, cadastre_number: e.target.value })}
-                />
-              </div>
+              {showArea && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="parea">{t("propertyArea")}</Label>
+                    <Input
+                      id="parea"
+                      type="number"
+                      value={form.property_area}
+                      onChange={(e) => setForm({ ...form, property_area: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cad">{t("cadastre")}</Label>
+                    <Input
+                      id="cad"
+                      value={form.cadastre_number}
+                      onChange={(e) => setForm({ ...form, cadastre_number: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="pval">{t("propertyValue")}</Label>
                 <Input
@@ -324,6 +359,7 @@ function NewNotaryRequest() {
               </div>
             </div>
           </section>
+
 
           <section className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4 rounded-2xl border border-border bg-card p-6">
