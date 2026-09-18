@@ -179,31 +179,12 @@ function ListingDetail() {
               <p className="mt-1 font-semibold">{listing.seller_name || "—"}</p>
             </div>
 
-            {!isOwner && listing.seller_id && (
-              <div className="space-y-2 rounded-xl border border-border p-4">
-                <p className="text-sm font-semibold">{t("writeToSeller")}</p>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={t("messagePlaceholder")}
-                  rows={3}
-                />
-                <Button
-                  className="w-full"
-                  disabled={!message.trim() || messageMutation.isPending}
-                  onClick={() => {
-                    if (!user) {
-                      toast.info(t("loginRequired"));
-                      navigate({ to: "/auth" });
-                      return;
-                    }
-                    messageMutation.mutate();
-                  }}
-                >
-                  <Send className="size-4" />
-                  {t("sendMessage")}
-                </Button>
-              </div>
+            {listing.seller_id && (
+              <ListingChat
+                listingId={id}
+                sellerId={listing.seller_id}
+                sellerName={listing.seller_name}
+              />
             )}
 
             {listing.contact_phone && (
