@@ -155,6 +155,7 @@ export type Database = {
           price_snapshot: number
           property_address: string
           property_area: number | null
+          property_details: Json
           property_title: string
           property_type: string
           property_value: number
@@ -186,6 +187,7 @@ export type Database = {
           price_snapshot?: number
           property_address?: string
           property_area?: number | null
+          property_details?: Json
           property_title?: string
           property_type?: string
           property_value?: number
@@ -217,6 +219,7 @@ export type Database = {
           price_snapshot?: number
           property_address?: string
           property_area?: number | null
+          property_details?: Json
           property_title?: string
           property_type?: string
           property_value?: number
