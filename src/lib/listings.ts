@@ -4,10 +4,17 @@ export type Category = "real_estate" | "vehicles" | "electronics" | "furniture" 
 export type Kind = "sale" | "rent";
 export type Status = "active" | "archived" | "sold";
 
-export const CATEGORIES: Category[] = ["real_estate", "vehicles", "electronics", "furniture", "other"];
+export const CATEGORIES: Category[] = [
+  "real_estate",
+  "vehicles",
+  "electronics",
+  "furniture",
+  "other",
+];
 
 export type Listing = {
   id: string;
+  listing_number: number;
   seller_id: string | null;
   seller_name: string | null;
   title: string;
@@ -37,8 +44,13 @@ export type ListingFilters = {
 export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {
   let query = supabase.from("listings").select("*").eq("status", "active");
 
-  if (filters.q) query = query.or(`title.ilike.%${filters.q}%,location.ilike.%${filters.q}%`);
-  if (filters.category && filters.category !== "all") query = query.eq("category", filters.category);
+  if (filters.q) {
+    const search = filters.q.trim();
+    if (/^\d{12}$/.test(search)) query = query.eq("listing_number", Number(search));
+    else query = query.or(`title.ilike.%${search}%,location.ilike.%${search}%`);
+  }
+  if (filters.category && filters.category !== "all")
+    query = query.eq("category", filters.category);
   if (filters.kind && filters.kind !== "all") query = query.eq("listing_kind", filters.kind);
   if (filters.priceMin != null) query = query.gte("price", filters.priceMin);
   if (filters.priceMax != null) query = query.lte("price", filters.priceMax);
@@ -56,6 +68,17 @@ export async function fetchListings(filters: ListingFilters = {}): Promise<Listi
 
 export async function fetchListing(id: string): Promise<Listing | null> {
   const { data, error } = await supabase.from("listings").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data as Listing) ?? null;
+}
+
+export async function fetchListingByNumber(value: string): Promise<Listing | null> {
+  if (!/^\d{12}$/.test(value)) return null;
+  const { data, error } = await supabase
+    .from("listings")
+    .select("*")
+    .eq("listing_number", Number(value))
+    .maybeSingle();
   if (error) throw error;
   return (data as Listing) ?? null;
 }
@@ -83,7 +106,10 @@ export async function fetchFavorites(userId: string): Promise<Listing[]> {
 }
 
 export async function fetchFavoriteIds(userId: string): Promise<string[]> {
-  const { data, error } = await supabase.from("favorites").select("listing_id").eq("user_id", userId);
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("listing_id")
+    .eq("user_id", userId);
   if (error) throw error;
   return (data ?? []).map((r: { listing_id: string }) => r.listing_id);
 }
@@ -97,7 +123,9 @@ export async function toggleFavorite(userId: string, listingId: string, isFav: b
       .eq("listing_id", listingId);
     if (error) throw error;
   } else {
-    const { error } = await supabase.from("favorites").insert({ user_id: userId, listing_id: listingId });
+    const { error } = await supabase
+      .from("favorites")
+      .insert({ user_id: userId, listing_id: listingId });
     if (error) throw error;
   }
 }

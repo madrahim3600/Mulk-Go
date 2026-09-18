@@ -18,7 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPrice, useI18n, type Lang } from "@/lib/i18n";
-import { fetchFavorites, fetchListing } from "@/lib/listings";
+import { fetchFavorites, fetchListingByNumber } from "@/lib/listings";
 import { fetchServicePrices, serviceName } from "@/lib/notary";
 import {
   AREA_KINDS,
@@ -34,7 +34,7 @@ type Search = { listing?: string | undefined };
 export const Route = createFileRoute("/_authenticated/notary/new")({
   component: NewNotaryRequest,
   validateSearch: (search: Record<string, unknown>): Search => ({
-    listing: typeof search['listing'] === "string" ? (search['listing'] as string) : undefined,
+    listing: typeof search["listing"] === "string" ? (search["listing"] as string) : undefined,
   }),
   head: () => ({
     meta: [
@@ -98,7 +98,7 @@ function NewNotaryRequest() {
   }, [services, serviceCode]);
 
   async function applyListing(id: string) {
-    const listing = await fetchListing(id.trim());
+    const listing = await fetchListingByNumber(id.trim());
     if (!listing) {
       toast.error(t("listingNotFound"));
       return;
@@ -255,9 +255,15 @@ function NewNotaryRequest() {
                     id="lid"
                     value={listingId}
                     onChange={(e) => setListingId(e.target.value)}
-                    placeholder="0000-0000-..."
+                    placeholder="12 xonali ID raqami"
+                    inputMode="numeric"
+                    maxLength={12}
                   />
-                  <Button type="button" variant="outline" onClick={() => void applyListing(listingId)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void applyListing(listingId)}
+                  >
                     {t("loadListing")}
                   </Button>
                 </div>
@@ -359,7 +365,6 @@ function NewNotaryRequest() {
               </div>
             </div>
           </section>
-
 
           <section className="grid gap-6 md:grid-cols-2">
             <div className="space-y-4 rounded-2xl border border-border bg-card p-6">

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Eye, Heart, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -13,12 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatPrice, useI18n, type Lang } from "@/lib/i18n";
-import {
-  PLACEHOLDER_IMAGE,
-  fetchFavoriteIds,
-  fetchListing,
-  toggleFavorite,
-} from "@/lib/listings";
+import { PLACEHOLDER_IMAGE, fetchFavoriteIds, fetchListing, toggleFavorite } from "@/lib/listings";
 
 export const Route = createFileRoute("/listings/$id")({
   component: ListingDetail,
@@ -39,6 +34,7 @@ function ListingDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeImage, setActiveImage] = useState(0);
+  const [showChat, setShowChat] = useState(false);
 
   const { data: listing, isLoading } = useQuery({
     queryKey: ["listing", id],
@@ -61,7 +57,6 @@ function ListingDetail() {
     mutationFn: () => toggleFavorite(user!.id, id, isFav),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorite-ids", user?.id] }),
   });
-
 
   if (isLoading) {
     return (
@@ -136,6 +131,7 @@ function ListingDetail() {
             </div>
 
             <h1 className="mt-3 text-2xl font-bold md:text-3xl">{listing.title}</h1>
+            <p className="mt-2 text-sm font-semibold text-primary">ID: {listing.listing_number}</p>
             <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <MapPin className="size-4" />
@@ -162,7 +158,7 @@ function ListingDetail() {
               <p className="mt-1 font-semibold">{listing.seller_name || "—"}</p>
             </div>
 
-            {listing.seller_id && (
+            {listing.seller_id && showChat && (
               <ListingChat
                 listingId={id}
                 sellerId={listing.seller_id}
@@ -196,6 +192,26 @@ function ListingDetail() {
             </Button>
 
             <Button
+              variant={showChat ? "secondary" : "outline"}
+              className="w-full"
+              onClick={() => {
+                if (!user) {
+                  toast.info(t("loginRequired"));
+                  navigate({ to: "/auth" });
+                  return;
+                }
+                if (!listing.seller_id) {
+                  toast.info(t("sellerUnavailable"));
+                  return;
+                }
+                setShowChat((visible) => !visible);
+              }}
+            >
+              <MessageCircle className="size-4" />
+              {t("writeToSeller")}
+            </Button>
+
+            <Button
               className="w-full"
               onClick={() => {
                 if (!user) {
@@ -209,7 +225,6 @@ function ListingDetail() {
               <ShieldCheck className="size-4" />
               {t("formalize")}
             </Button>
-
           </aside>
         </div>
 

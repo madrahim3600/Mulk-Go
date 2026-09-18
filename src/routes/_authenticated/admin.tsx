@@ -26,7 +26,10 @@ export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Admin panel — Mulk-Go" },
-      { name: "description", content: "Xizmat narxlarini belgilash va rasmiylashtirish arizalarini boshqarish." },
+      {
+        name: "description",
+        content: "Xizmat narxlarini belgilash va rasmiylashtirish arizalarini boshqarish.",
+      },
       { property: "og:title", content: "Admin panel — Mulk-Go" },
       { property: "og:description", content: "Narxlar va arizalar boshqaruvi." },
       { property: "og:type", content: "website" },
@@ -40,6 +43,7 @@ function AdminPanel() {
   const isAdmin = useIsAdmin();
   const queryClient = useQueryClient();
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [listingSearch, setListingSearch] = useState("");
 
   const { data: services, isLoading } = useQuery({
     queryKey: ["service-prices-all"],
@@ -50,6 +54,20 @@ function AdminPanel() {
   const { data: requests } = useQuery({
     queryKey: ["notary-requests-all"],
     queryFn: fetchAllNotaryRequests,
+    enabled: isAdmin,
+  });
+
+  const { data: listings } = useQuery({
+    queryKey: ["admin-listings", listingSearch],
+    queryFn: async () => {
+      let query = supabase.from("listings").select("*").order("created_at", { ascending: false });
+      const search = listingSearch.trim();
+      if (/^\d{12}$/.test(search)) query = query.eq("listing_number", Number(search));
+      else if (search) query = query.ilike("title", `%${search}%`);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data ?? [];
+    },
     enabled: isAdmin,
   });
 
@@ -94,6 +112,22 @@ function AdminPanel() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const listingMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status?: "active" | "archived" | "sold" }) => {
+      const query = supabase.from("listings");
+      const result = status
+        ? await query.update({ status }).eq("id", id)
+        : await query.delete().eq("id", id);
+      if (result.error) throw result.error;
+    },
+    onSuccess: () => {
+      toast.success(t("saved"));
+      queryClient.invalidateQueries({ queryKey: ["admin-listings"] });
+      queryClient.invalidateQueries({ queryKey: ["listings"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (!isAdmin) {
     return (
       <div className="flex min-h-screen flex-col">
@@ -114,10 +148,72 @@ function AdminPanel() {
         <h1 className="text-2xl font-bold">{t("adminPanel")}</h1>
 
         <section className="mt-8">
+          <h2 className="text-xl font-bold">{t("manageListings")}</h2>
+          <Input
+            className="mt-4"
+            value={listingSearch}
+            onChange={(e) => setListingSearch(e.target.value.replace(/\D/g, "").slice(0, 12))}
+            placeholder={t("searchByListingNumber")}
+            inputMode="numeric"
+            maxLength={12}
+          />
+          <div className="mt-4 space-y-3">
+            {(listings?.length ?? 0) === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">
+                {t("nothingFound")}
+              </div>
+            ) : (
+              listings!.map((listing) => (
+                <div
+                  key={listing.id}
+                  className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">{listing.title}</p>
+                    <p className="text-sm font-semibold text-primary">
+                      ID: {listing.listing_number}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{listing.seller_name || "—"}</p>
+                  </div>
+                  <Badge variant={listing.status === "active" ? "default" : "secondary"}>
+                    {listing.status}
+                  </Badge>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => listingMutation.mutate({ id: listing.id, status: "active" })}
+                    >
+                      {t("activate")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => listingMutation.mutate({ id: listing.id, status: "archived" })}
+                    >
+                      {t("archive")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => listingMutation.mutate({ id: listing.id })}
+                    >
+                      {t("deleteListing")}
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="mt-8">
           <h2 className="text-xl font-bold">{t("managePrices")}</h2>
           <div className="mt-4 space-y-3">
             {isLoading
-              ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 rounded-2xl" />
+                ))
               : services?.map((s) => (
                   <div
                     key={s.id}
@@ -214,7 +310,9 @@ function AdminPanel() {
                           key={st}
                           size="sm"
                           variant={r.status === st ? "default" : "ghost"}
-                          onClick={() => requestMutation.mutate({ id: r.id, patch: { status: st } })}
+                          onClick={() =>
+                            requestMutation.mutate({ id: r.id, patch: { status: st } })
+                          }
                         >
                           {t(STATUS_KEYS[st] as keyof typeof dict)}
                         </Button>

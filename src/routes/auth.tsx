@@ -42,11 +42,12 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
+        const emailRedirectTo = new URL("/auth", window.location.origin).toString();
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo,
             data: { full_name: fullName, phone },
           },
         });

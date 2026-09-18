@@ -17,7 +17,10 @@ export const Route = createFileRoute("/_authenticated/my-listings")({
   head: () => ({
     meta: [
       { title: "Mening elonlarim — Mulk-Go" },
-      { name: "description", content: "O'z elonlaringizni boshqaring: tahrirlash, arxivlash, o'chirish." },
+      {
+        name: "description",
+        content: "O'z elonlaringizni boshqaring: tahrirlash, arxivlash, o'chirish.",
+      },
       { property: "og:title", content: "Mening elonlarim — Mulk-Go" },
       { property: "og:description", content: "Elonlaringiz holati va statistikasi." },
     ],
@@ -72,7 +75,9 @@ function MyListings() {
 
         <div className="mt-6 space-y-3">
           {isLoading ? (
-            Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)
+            Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-28 rounded-2xl" />
+            ))
           ) : (data?.length ?? 0) === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
               {t("noListingsYet")}
@@ -99,6 +104,7 @@ function MyListings() {
                   <p className="mt-1 font-display font-bold">
                     {formatPrice(Number(l.price), l.currency, lang as Lang)}
                   </p>
+                  <p className="mt-1 text-xs font-semibold text-primary">ID: {l.listing_number}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <Badge variant={l.status === "active" ? "default" : "secondary"}>
                       {t(l.status)}

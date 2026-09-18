@@ -24,7 +24,10 @@ export const Route = createFileRoute("/_authenticated/new-listing")({
   head: () => ({
     meta: [
       { title: "Elon berish — Mulk-Go" },
-      { name: "description", content: "Mulkingiz haqida yangi elon joylang: narx, tavsif va rasm." },
+      {
+        name: "description",
+        content: "Mulkingiz haqida yangi elon joylang: narx, tavsif va rasm.",
+      },
       { property: "og:title", content: "Elon berish — Mulk-Go" },
       { property: "og:description", content: "Bir necha daqiqada elon joylang." },
     ],
@@ -72,10 +75,10 @@ function NewListing() {
           images: form.image ? [form.image] : [],
           contact_phone: form.contact_phone || profile?.phone || null,
         })
-        .select("id")
+        .select("id, listing_number")
         .single();
       if (error) throw error;
-      toast.success(t("listingCreated"));
+      toast.success(`${t("listingCreated")}: ${data.listing_number}`);
       navigate({ to: "/listings/$id", params: { id: data.id } });
     } catch (err) {
       toast.error((err as Error).message);
@@ -90,7 +93,10 @@ function NewListing() {
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8">
         <h1 className="text-2xl font-bold">{t("newListing")}</h1>
 
-        <form className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-6" onSubmit={submit}>
+        <form
+          className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-6"
+          onSubmit={submit}
+        >
           <div className="space-y-2">
             <Label htmlFor="title">{t("title")}</Label>
             <Input

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Heart, LogOut, MessageSquare, Plus, User2, Building2 } from "lucide-react";
+import { LogOut, MessageSquare, Plus, User2, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -89,10 +89,7 @@ export function Header() {
                     <Link to="/my-listings">{t("myListings")}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/favorites">
-                      <Heart className="size-4" />
-                      {t("favorites")}
-                    </Link>
+                    <Link to="/favorites">{t("favorites")}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/messages">

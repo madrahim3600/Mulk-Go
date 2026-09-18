@@ -18,7 +18,10 @@ export const dict: Dict = {
     uz: "Ko'chmas mulk, transport, texnika va boshqa aktivlar — bir joyda, rasmiy va ishonchli.",
     ru: "Недвижимость, транспорт, техника и другие активы — в одном месте, официально и надёжно.",
   },
-  searchPlaceholder: { uz: "Nima qidiryapsiz?", ru: "Что вы ищете?" },
+  searchPlaceholder: {
+    uz: "Nomi, joylashuv yoki 12 xonali ID",
+    ru: "Название, место или 12-значный ID",
+  },
   search: { uz: "Qidirish", ru: "Найти" },
   categories: { uz: "Kategoriyalar", ru: "Категории" },
   allCategories: { uz: "Barcha kategoriyalar", ru: "Все категории" },
@@ -65,6 +68,10 @@ export const dict: Dict = {
   views: { uz: "ko'rish", ru: "просмотров" },
   seller: { uz: "Sotuvchi", ru: "Продавец" },
   writeToSeller: { uz: "Sotuvchiga yozish", ru: "Написать продавцу" },
+  sellerUnavailable: {
+    uz: "Bu e'lon sotuvchi akkauntiga ulanmagan.",
+    ru: "Это объявление не связано с аккаунтом продавца.",
+  },
   callSeller: { uz: "Qo'ng'iroq qilish", ru: "Позвонить" },
   addFavorite: { uz: "Sevimlilarga", ru: "В избранное" },
   inFavorites: { uz: "Sevimlilarda", ru: "В избранном" },
@@ -161,6 +168,10 @@ export const dict: Dict = {
   manualProperty: { uz: "Elonda yo'q mulk", ru: "Имущество без объявления" },
   listingId: { uz: "Elon ID raqami", ru: "ID объявления" },
   loadListing: { uz: "Yuklash", ru: "Загрузить" },
+  listingNumber: { uz: "Elon ID", ru: "ID объявления" },
+  searchByListingNumber: { uz: "12 xonali ID orqali qidiring", ru: "Поиск по 12-значному ID" },
+  manageListings: { uz: "Elonlarni boshqarish", ru: "Управление объявлениями" },
+  deleteListing: { uz: "Elonni o'chirish", ru: "Удалить объявление" },
   listingLoaded: { uz: "Elon topildi", ru: "Объявление найдено" },
   listingNotFound: { uz: "Bunday elon topilmadi", ru: "Объявление не найдено" },
   propertyType: { uz: "Mulk turi", ru: "Тип имущества" },
@@ -215,10 +226,13 @@ export const dict: Dict = {
   applicant: { uz: "Ariza beruvchi", ru: "Заявитель" },
 };
 
-
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: keyof typeof dict) => string };
 
-const I18nContext = createContext<Ctx>({ lang: "uz", setLang: () => {}, t: (k) => dict[k]?.uz ?? String(k) });
+const I18nContext = createContext<Ctx>({
+  lang: "uz",
+  setLang: () => {},
+  t: (k) => dict[k]?.uz ?? String(k),
+});
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("uz");

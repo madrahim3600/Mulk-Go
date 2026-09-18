@@ -32,6 +32,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
           {formatPrice(Number(listing.price), listing.currency, lang as Lang)}
         </p>
         <h3 className="line-clamp-2 text-sm font-medium text-foreground/90">{listing.title}</h3>
+        <p className="text-xs font-semibold text-primary">ID: {listing.listing_number}</p>
         <div className="mt-auto flex items-center justify-between pt-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <MapPin className="size-3.5" />
