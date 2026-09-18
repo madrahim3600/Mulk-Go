@@ -91,7 +91,6 @@ function ListingDetail() {
   }
 
   const images = listing.images?.length ? listing.images : [PLACEHOLDER_IMAGE];
-  const isOwner = user?.id && listing.seller_id === user.id;
 
   return (
     <div className="flex min-h-screen flex-col">
