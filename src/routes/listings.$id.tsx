@@ -212,6 +212,8 @@ function ListingDetail() {
 
           </aside>
         </div>
+
+        <ListingComments listingId={id} />
       </main>
       <Footer />
     </div>
