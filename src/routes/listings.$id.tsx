@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Eye, Heart, MapPin, Phone, Send, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ListingChat } from "@/components/ListingChat";
+import { ListingComments } from "@/components/ListingComments";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,7 +38,6 @@ function ListingDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [message, setMessage] = useState("");
   const [activeImage, setActiveImage] = useState(0);
 
   const { data: listing, isLoading } = useQuery({
@@ -62,22 +62,6 @@ function ListingDetail() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorite-ids", user?.id] }),
   });
 
-  const messageMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("messages").insert({
-        listing_id: id,
-        sender_id: user!.id,
-        receiver_id: listing!.seller_id!,
-        body: message.trim(),
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setMessage("");
-      toast.success(t("sent"));
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
   if (isLoading) {
     return (
@@ -107,7 +91,6 @@ function ListingDetail() {
   }
 
   const images = listing.images?.length ? listing.images : [PLACEHOLDER_IMAGE];
-  const isOwner = user?.id && listing.seller_id === user.id;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -179,31 +162,12 @@ function ListingDetail() {
               <p className="mt-1 font-semibold">{listing.seller_name || "—"}</p>
             </div>
 
-            {!isOwner && listing.seller_id && (
-              <div className="space-y-2 rounded-xl border border-border p-4">
-                <p className="text-sm font-semibold">{t("writeToSeller")}</p>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={t("messagePlaceholder")}
-                  rows={3}
-                />
-                <Button
-                  className="w-full"
-                  disabled={!message.trim() || messageMutation.isPending}
-                  onClick={() => {
-                    if (!user) {
-                      toast.info(t("loginRequired"));
-                      navigate({ to: "/auth" });
-                      return;
-                    }
-                    messageMutation.mutate();
-                  }}
-                >
-                  <Send className="size-4" />
-                  {t("sendMessage")}
-                </Button>
-              </div>
+            {listing.seller_id && (
+              <ListingChat
+                listingId={id}
+                sellerId={listing.seller_id}
+                sellerName={listing.seller_name}
+              />
             )}
 
             {listing.contact_phone && (
@@ -248,6 +212,8 @@ function ListingDetail() {
 
           </aside>
         </div>
+
+        <ListingComments listingId={id} />
       </main>
       <Footer />
     </div>

@@ -76,6 +76,28 @@ export const dict: Dict = {
   messagePlaceholder: { uz: "Xabaringizni yozing...", ru: "Напишите сообщение..." },
   sent: { uz: "Yuborildi", ru: "Отправлено" },
   noMessages: { uz: "Xabarlar yo'q", ru: "Сообщений нет" },
+  chatWithSeller: { uz: "Sotuvchi bilan chat", ru: "Чат с продавцом" },
+  chatPrivateNote: {
+    uz: "Yozishmalar faqat siz va sotuvchi o'rtasida ko'rinadi.",
+    ru: "Переписка видна только вам и продавцу.",
+  },
+  chatEmpty: {
+    uz: "Suhbatni birinchi bo'lib boshlang.",
+    ru: "Начните диалог первым.",
+  },
+  buyers: { uz: "Xaridorlar", ru: "Покупатели" },
+  noBuyersYet: { uz: "Hali hech kim yozmagan", ru: "Пока никто не написал" },
+  comments: { uz: "Izohlar", ru: "Комментарии" },
+  commentsPublicNote: {
+    uz: "Izohlarni barcha ko'radi.",
+    ru: "Комментарии видны всем.",
+  },
+  commentPlaceholder: { uz: "Izohingizni yozing...", ru: "Напишите комментарий..." },
+  addComment: { uz: "Izoh qoldirish", ru: "Оставить комментарий" },
+  noComments: { uz: "Hali izoh yo'q", ru: "Комментариев пока нет" },
+  deleteAction: { uz: "O'chirish", ru: "Удалить" },
+  you: { uz: "Siz", ru: "Вы" },
+  userLabel: { uz: "Foydalanuvchi", ru: "Пользователь" },
   howItWorks: { uz: "Qanday ishlaydi", ru: "Как это работает" },
   step1t: { uz: "Elon joylang", ru: "Разместите объявление" },
   step1d: {
