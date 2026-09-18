@@ -63,22 +63,6 @@ function ListingDetail() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorite-ids", user?.id] }),
   });
 
-  const messageMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("messages").insert({
-        listing_id: id,
-        sender_id: user!.id,
-        receiver_id: listing!.seller_id!,
-        body: message.trim(),
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setMessage("");
-      toast.success(t("sent"));
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
 
   if (isLoading) {
     return (
